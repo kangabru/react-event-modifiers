@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "react-event-modifiers",
   "description": "Enhances React elements with Svelte-inspired event modifiers like 'onClick-preventDefault' and 'onClick-stopPropagation'.",
   "author": "kangabru",
@@ -11,6 +11,14 @@
     "stopPropagation",
     "preventDefault"
   ],
+  "homepage": "https://github.com/kangabru/react-event-modifiers/#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kangabru/react-event-modifiers/"
+  },
+  "bugs": {
+    "url": "https://github.com/kangabru/react-event-modifiers/issues"
+  },
   "scripts": {
     "test": "jest",
     "build": "vite build && npm run build:types",

@@ -38,14 +38,6 @@ import mod from "react-event-modifiers"
 </mod.form>
 ```
 
-You can also chain the two together as follows (although it's not clear where this is useful).
-
-```jsx
-<button onClick-preventDefault-stopPropagation={handleClick}>
-  {/* The click event wont't propagate and it's default is prevented */}
-</button>
-```
-
 ---
 
 ## 🚀 Get started
@@ -70,16 +62,28 @@ import mod from "react-event-modifiers"
 <mod.button onClick-stopPropagation={handleClick}>Click me</mod.button>
 ```
 
-You can even use modifiers without a handler like this:
+Note the `mod.` prefix to the element, and the `-stopPropagation` modifier to the event handler prop.
+
+You can use modifiers without a handler like this:
 
 ```jsx
 <mod.button onClick-stopPropagation>Click me</mod.button>
 ```
 
-Note the `mod.` prefix to the element, and the `-stopPropagation` modifier to the event handler prop.
+and chain modifiers together like this:
+
+```jsx
+<mod.button onClick-preventDefault-stopPropagation={handleClick}>Click me</mod.button>
+```
+
 
 All native JSX elements are supported and this library should act as a drop in replacement which doesn't affect other props.
 Typescript is fully supported too!
+
+![Typescript example](https://github.com/kangabru/react-event-modifiers/blob/assets/images/types_example.png?raw=true)
+
+
+Note that the only Svelte modifiers that are supported are `stopPropagation` and `preventDefault`. React [already supports](https://react.dev/learn/responding-to-events#capture-phase-events) `capture` events and other modifiers were deemed too niche to implement.
 
 ---
 
@@ -96,9 +100,9 @@ It works as follows:
 
 Modifying the props:
 
-- The props are given as a simple JS object with keys/vals like `{ "onClick-stopPropagation": aCustomHandler }`.
+- The props are given as a simple JS object with keys/vals like `{ "onClick-stopPropagation": customHandler }`.
 - This library can then strip out the modifiers like `-stopPropagation` and wrap functions with an appropriate handler.
-- Finally the new handler is assigned to the default keyword and the result is a modified object like `{ "onClick": (e) => { e.stopPropagation(); aCustomHandler(e) } }`
+- Finally the new handler is assigned to the default keyword and the result is a modified object like `{ "onClick": (e) => { e.stopPropagation(); customHandler(e) } }`
 
 Creating the types:
 
@@ -109,6 +113,12 @@ Creating the types:
   - [Mapped types](https://www.typescriptlang.org/docs/handbook/2/mapped-types.html) to copy and modify the original `JSX.IntrinsicElements` types into custom ones
   - [Template literal types](https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html) to modify event types like `onClick` to `onClick-stopPropagation`
 - Finally this library even has Typescript tests which cover important use cases. E.g. testing that non-modifiable props like `className` are not polluted with modifiers.
+
+---
+
+## 🤷 Is this actually useful?
+
+It's a definitely a _tiny_ quality of life feature but it comes in handy. It really shines when making games and modals where there are many overlaying clickable elements. Having a simple modifier can keep code clean and even save you from making your own click wrappers. It's also a nice feature if you're writing a lot of client-side forms.
 
 ---
 
