@@ -1,31 +1,42 @@
-import { HTMLComponentProps, modifyEvents, reactEventModifier } from "../lib"
+import {
+  EventModifierElementProps,
+  modifyPropEvents,
+  reactEventModifier,
+} from "../lib"
 
 test("Test proxy", () => {
   const elDiv = reactEventModifier.div
   expect(elDiv).toBeInstanceOf(Object)
   expect(elDiv).toHaveProperty("$$typeof")
   expect(elDiv).toHaveProperty("render")
-  expect((elDiv as any).render).toBeInstanceOf(Function)
-  expect((elDiv as any).render.name).toBe("EventModifier")
+  expect(elDiv).toHaveProperty("displayName")
+  expect((elDiv as any).displayName).toBe("<div> (Event Modified Element)")
 
   const elForm = reactEventModifier.form
   expect(elForm).toBeInstanceOf(Object)
   expect(elForm).toHaveProperty("$$typeof")
   expect(elForm).toHaveProperty("render")
-  expect((elForm as any).render).toBeInstanceOf(Function)
-  expect((elForm as any).render.name).toBe("EventModifier")
+  expect((elForm as any).displayName).toBe("<form> (Event Modified Element)")
 })
 
 test("Test modify props", () => {
+  const [event, data] = createMockEvent()
+
   const props = {
     className: "hello",
-    onClick: () => console.log("on click"),
+    "data-hello-world": true,
+    onClick: () => data.push("default"),
   }
 
-  const modifiedProps = modifyEvents(props)
+  const modifiedProps = modifyPropEvents(props)
 
   expect(modifiedProps.className).toBe("hello")
   expect(modifiedProps.onClick).toBeInstanceOf(Function)
+  expect((modifiedProps as any)["data-hello-world"]).toBe(true)
+
+  expect(data).toStrictEqual([])
+  modifiedProps.onClick?.(event as any)
+  expect(data).toStrictEqual(["default"] satisfies DataValues[])
 })
 
 test("Test modify props stopPropagation", () => {
@@ -34,9 +45,9 @@ test("Test modify props stopPropagation", () => {
   const props = {
     className: "hello",
     "onClick-stopPropagation": () => data.push("default"),
-  } satisfies HTMLComponentProps<"div">
+  } satisfies EventModifierElementProps<"div">
 
-  const modifiedProps = modifyEvents(props)
+  const modifiedProps = modifyPropEvents(props)
 
   expect(modifiedProps.className).toBe("hello")
   expect(modifiedProps.onClick).toBeInstanceOf(Function)
@@ -56,9 +67,9 @@ test("Test modify props preventDefault", () => {
   const props = {
     className: "hello",
     "onSubmit-preventDefault": () => data.push("default"),
-  } satisfies HTMLComponentProps<"form">
+  } satisfies EventModifierElementProps<"form">
 
-  const modifiedProps = modifyEvents(props)
+  const modifiedProps = modifyPropEvents(props)
 
   expect(modifiedProps.className).toBe("hello")
   expect(modifiedProps.onSubmit).toBeInstanceOf(Function)
@@ -78,9 +89,9 @@ test("Test modify props stop+prevent", () => {
   const props = {
     className: "hello",
     "onSubmit-preventDefault-stopPropagation": () => data.push("default"),
-  } satisfies HTMLComponentProps<"form">
+  } satisfies EventModifierElementProps<"form">
 
-  const modifiedProps = modifyEvents(props)
+  const modifiedProps = modifyPropEvents(props)
 
   expect(modifiedProps.className).toBe("hello")
   expect(modifiedProps.onSubmit).toBeInstanceOf(Function)
@@ -103,9 +114,9 @@ test("Test modify props boolean stopPropagation", () => {
   const props = {
     className: "hello",
     "onClick-stopPropagation": true,
-  } satisfies HTMLComponentProps<"div">
+  } satisfies EventModifierElementProps<"div">
 
-  const modifiedProps = modifyEvents(props)
+  const modifiedProps = modifyPropEvents(props)
 
   expect(modifiedProps.className).toBe("hello")
   expect(modifiedProps.onClick).toBeInstanceOf(Function)
@@ -122,9 +133,9 @@ test("Test modify props boolean preventDefault", () => {
   const props = {
     className: "hello",
     "onSubmit-preventDefault": true,
-  } satisfies HTMLComponentProps<"form">
+  } satisfies EventModifierElementProps<"form">
 
-  const modifiedProps = modifyEvents(props)
+  const modifiedProps = modifyPropEvents(props)
 
   expect(modifiedProps.className).toBe("hello")
   expect(modifiedProps.onSubmit).toBeInstanceOf(Function)

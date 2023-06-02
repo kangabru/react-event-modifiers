@@ -4,42 +4,42 @@ import { EventModifierProps } from "./types"
 type ValidElements = JSX.IntrinsicElements
 type ValidNames = keyof ValidElements
 
-export const reactEventModifier = new Proxy({} as HTMLComponents, {
+export const reactEventModifier = new Proxy({} as EventModifedElements, {
   get: (_target, key: string) => eventModifierWrapper(key as any),
 })
 
 const debug = false
 
-type HTMLComponents = {
-  [K in ValidNames]: HTMLComponent<K>
+type EventModifedElements = {
+  [K in ValidNames]: EventModifedElement<K>
 }
 
-export type HTMLComponentProps<N extends ValidNames> = ValidElements[N] &
+export type EventModifierElementProps<N extends ValidNames> = ValidElements[N] &
   EventModifierProps<ValidElements, N>
 
-type HTMLComponent<N extends ValidNames> = (
-  props: HTMLComponentProps<N>
+type EventModifedElement<N extends ValidNames> = (
+  props: EventModifierElementProps<N>
 ) => ReactElement
 
 const eventModifierWrapper = function <N extends ValidNames>(
   el: N
-): HTMLComponent<N> {
-  return forwardRef(function EventModifier(
-    props: ValidElements[N],
-    ref: Ref<unknown>
-  ) {
-    return createElement(el, modifyEvents(props, ref))
-  }) as any
+): EventModifedElement<N> {
+  const WrappedElement = forwardRef(
+    (props: ValidElements[N], ref: Ref<unknown>) =>
+      createElement(el, modifyPropEvents(props, ref))
+  )
+  WrappedElement.displayName = `<${el}> (Event Modified Element)`
+  return WrappedElement as any
 }
 
-export function modifyEvents<
+export function modifyPropEvents<
   N extends ValidNames,
-  IProps extends HTMLComponentProps<N>,
+  IProps extends EventModifierElementProps<N>,
   OProps extends ValidElements[N]
 >(props: IProps, ref?: Ref<unknown>): OProps {
   const _props: Record<string, any> = {}
   for (const [propKey, propVal] of Object.entries(props)) {
-    const [key, val] = addEventHandlerToProp(propKey, propVal)
+    const [key, val] = getModifiedPropEvent(propKey, propVal)
     _props[key] = val
   }
   if (ref) _props.ref = ref
@@ -54,7 +54,7 @@ export function modifyEvents<
  * @example
  *  A function named "onClick-stopPropagation" becomes "onClick" and the function is wrapped
  */
-function addEventHandlerToProp<TVal>(
+function getModifiedPropEvent<TVal>(
   propName: string,
   propValue: TVal
 ): [string, TVal] {
