@@ -1,6 +1,9 @@
+import { useRef } from "react"
 import mod from "react-event-modifiers"
 
 export default function TestPage() {
+  const ref = useRef<HTMLDivElement>(null)
+  const doSomethingWithRef = () => console.log("Ref", ref.current)
   return (
     <main
       className="w-full max-w-screen-sm mx-auto p-10 m-10 bg-gray-100 rounded-2xl space-y-4"
@@ -10,7 +13,9 @@ export default function TestPage() {
 
       <div onClick={logElementName}>DIV: Normal</div>
 
-      <mod.div onClick-stopPropagation={logElementName}>
+      <div onClick={doSomethingWithRef}>DIV: Normal + Ref</div>
+
+      <mod.div ref={ref} onClick-stopPropagation={logElementName}>
         DIV: StopPropagation
       </mod.div>
 

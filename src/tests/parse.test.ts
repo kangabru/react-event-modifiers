@@ -2,12 +2,18 @@ import { HTMLComponentProps, modifyEvents, reactEventModifier } from "../lib"
 
 test("Test proxy", () => {
   const elDiv = reactEventModifier.div
-  expect(elDiv).toBeInstanceOf(Function)
-  expect(elDiv.name).toBe("EventModifier")
+  expect(elDiv).toBeInstanceOf(Object)
+  expect(elDiv).toHaveProperty("$$typeof")
+  expect(elDiv).toHaveProperty("render")
+  expect((elDiv as any).render).toBeInstanceOf(Function)
+  expect((elDiv as any).render.name).toBe("EventModifier")
 
   const elForm = reactEventModifier.form
-  expect(elForm).toBeInstanceOf(Function)
-  expect(elForm.name).toBe("EventModifier")
+  expect(elForm).toBeInstanceOf(Object)
+  expect(elForm).toHaveProperty("$$typeof")
+  expect(elForm).toHaveProperty("render")
+  expect((elForm as any).render).toBeInstanceOf(Function)
+  expect((elForm as any).render.name).toBe("EventModifier")
 })
 
 test("Test modify props", () => {

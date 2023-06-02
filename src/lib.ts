@@ -1,4 +1,4 @@
-import { ReactElement, createElement } from "react"
+import { ReactElement, Ref, createElement, forwardRef } from "react"
 import { EventModifierProps } from "./types"
 
 type ValidElements = JSX.IntrinsicElements
@@ -24,21 +24,25 @@ type HTMLComponent<N extends ValidNames> = (
 const eventModifierWrapper = function <N extends ValidNames>(
   el: N
 ): HTMLComponent<N> {
-  return function EventModifier(props: ValidElements[N]) {
-    return createElement(el, modifyEvents(props))
-  }
+  return forwardRef(function EventModifier(
+    props: ValidElements[N],
+    ref: Ref<unknown>
+  ) {
+    return createElement(el, modifyEvents(props, ref))
+  }) as any
 }
 
 export function modifyEvents<
   N extends ValidNames,
   IProps extends HTMLComponentProps<N>,
   OProps extends ValidElements[N]
->(props: IProps): OProps {
+>(props: IProps, ref?: Ref<unknown>): OProps {
   const _props: Record<string, any> = {}
   for (const [propKey, propVal] of Object.entries(props)) {
     const [key, val] = addEventHandlerToProp(propKey, propVal)
     _props[key] = val
   }
+  if (ref) _props.ref = ref
   return _props as any
 }
 
