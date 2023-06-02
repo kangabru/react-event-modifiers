@@ -1,5 +1,5 @@
 import { useRef } from "react"
-import mod from "react-event-modifiers"
+import mod from "../../src/index"
 
 export default function TestPage() {
   const ref = useRef<HTMLDivElement>(null)
@@ -15,11 +15,31 @@ export default function TestPage() {
 
       <div onClick={doSomethingWithRef}>DIV: Normal + Ref</div>
 
-      <mod.div ref={ref} onClick-stopPropagation={logElementName}>
+      <mod.div
+        ref={ref}
+        data-hello="world"
+        onClick-stopPropagation={logElementName}
+      >
         DIV: StopPropagation
       </mod.div>
 
       <mod.div onClick-stopPropagation>DIV: StopPropagation with flag</mod.div>
+
+      <p>
+        <button onClick={logElementName}>BUTTON: Normal</button>
+      </p>
+
+      <p>
+        <mod.button data-hello="world" onClick-stopPropagation={logElementName}>
+          BUTTON: StopPropagation
+        </mod.button>
+      </p>
+
+      <p>
+        <mod.button onClick-stopPropagation>
+          BUTTON: StopPropagation with flag
+        </mod.button>
+      </p>
 
       <form>
         <button type="submit">FORM: Normal</button>
